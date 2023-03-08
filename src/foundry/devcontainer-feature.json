@@ -1,0 +1,19 @@
+{
+    "name": "Foundry",
+    "id": "foundry",
+    "version": "1.0.0",
+    "description": "A feature to install Foundry (Ethereum application development toolkit) via Foundry's own foundryup command.",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": [
+                "nightly"
+            ],
+            "default": "",
+            "description": "The specific version to install (foundryup --version $VERSION)"
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ]
+}

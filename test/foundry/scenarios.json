@@ -1,0 +1,18 @@
+{
+    "alpine": {
+        "image": "alpine:latest",
+        "features": {
+            "foundry": {
+                "branch": "master"
+            }
+        }
+    },
+    "manpages": {
+        "image": "debian:latest",
+        "features": {
+            "foundry": {
+                "branch": "master"
+            }
+        }
+    }
+}
