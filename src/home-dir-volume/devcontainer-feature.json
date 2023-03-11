@@ -1,0 +1,17 @@
+{
+  "name": "Home Directory Volume",
+  "id": "home-dir-volume",
+  "version": "1.0.0",
+  "description": "Mount a Docker volume (called `devcontainer-home-dir`) at /home/vscode in the devcontainer.",
+  "containerEnv": {
+    "HOME_DIRECTORY_VOLUME_NAME": "devcontainer-home-dir"
+  },
+  "mounts": [
+    {
+      "source": "devcontainer-home-dir",
+      "target": "/home/vscode",
+      "type": "volume"
+    }
+  ],
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
+}
