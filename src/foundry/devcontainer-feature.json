@@ -1,8 +1,11 @@
 {
   "name": "Foundry",
   "id": "foundry",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A feature to install Foundry (Ethereum application development toolkit) via Foundry's own foundryup command.",
+  "containerEnv": {
+    "PATH": "/usr/local/share/foundry/bin:$PATH"
+  },
   "options": {
     "version": {
       "type": "string",
