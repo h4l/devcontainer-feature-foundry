@@ -24,19 +24,10 @@ chmod +x $BIN_PATH
 # Create the man directory for future man files if it doesn't exist.
 mkdir -p $FOUNDRY_MAN_DIR
 
-# Add foundry to PATH & MANPATH
-cat > /etc/profile.d/50-foundry.sh \
-<< EOF
-export PATH="${FOUNDRY_BIN_DIR:?}:\$PATH"
-EOF
-
 # Add the foundry manpages to the MANPATH
 if [[ -e /etc/manpath.config ]]; then
  echo "MANDATORY_MANPATH $FOUNDRY_ROOT_MAN_DIR" >> /etc/manpath.config
 fi
-
-# Install foundry via foundryup
-source /etc/profile.d/50-foundry.sh
 
 INSTALL_ARGS=()
 if [[ "$VERSION" != "" ]]; then
@@ -45,4 +36,3 @@ if [[ "$VERSION" != "" ]]; then
 fi
 
 foundryup "${INSTALL_ARGS[@]}"
-
