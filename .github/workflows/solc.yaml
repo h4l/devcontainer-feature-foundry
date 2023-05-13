@@ -47,9 +47,14 @@ jobs:
           BAKE_META: ${{ steps.bake.outputs.metadata }}
         run: |
           set -xeuo pipefail
-          jq <<<$BAKE_META -er '
-            .[]
-            | select(.["image.name"]? and .["containerimage.digest"]?)
-            | "\(.["image.name"])@\(.["containerimage.digest"])"
-          ' \
-          | xargs -I{} cosign sign --yes --recursive {}
+          # Use a loop rather than xargs so that -x can show what's happening
+          readarray -t image_digests <<<$(
+            jq <<<$BAKE_META -r '
+              .[]
+              | select(.["image.name"]? and .["containerimage.digest"]?)
+              | "\(.["image.name"])@\(.["containerimage.digest"])"
+            '
+          )
+          for image_digest in "${image_digests[@]}"; do
+            cosign sign --yes --recursive "${image_digest:?}"
+          done
