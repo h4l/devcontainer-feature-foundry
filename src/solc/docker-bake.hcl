@@ -51,3 +51,28 @@ target "solc-z3-binaries" {
     tags = [tag("solc-z3-binaries", TAG_VERSION)]
     output = ["binaries"]
 }
+
+group "cosign" {
+    targets = ["cosign-test-1", "cosign-test-2", "cosign-test-3"]
+}
+
+target "_cosign_base" {
+    dockerfile = "cosign-test.Dockerfile"
+    platforms = ["linux/amd64", "linux/arm64"]
+}
+
+target "cosign-test-1" {
+    inherits = ["_cosign_base"]
+    tags = [tag("cosign-test-1", TAG_VERSION)]
+}
+
+target "cosign-test-2" {
+    inherits = ["_cosign_base"]
+    tags = [tag("cosign-test-2", TAG_VERSION)]
+}
+
+target "cosign-test-3" {
+    inherits = ["_cosign_base"]
+    tags = [tag("cosign-test-3", TAG_VERSION)]
+    output = ["example-local-dir"]
+}
