@@ -1,6 +1,8 @@
 name: "Build the Solidity Compiler (solc) for multiple CPU architectures"
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - solc-arm-cross
 
 jobs:
   build:
