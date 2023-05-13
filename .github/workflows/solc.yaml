@@ -39,7 +39,6 @@ jobs:
           workdir: src/solc
           files: docker-bake.hcl
           provenance: true
-          targets: cosign
           sbom: true
           push: true
       - name: Sign container images with Sigstore Cosign
