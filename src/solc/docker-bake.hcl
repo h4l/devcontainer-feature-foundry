@@ -1,4 +1,4 @@
-variable "REGISTRY" {
+variable "TAG_PREFIX" {
     default = ""
 }
 
@@ -20,7 +20,7 @@ group "default" {
 
 function "tag" {
     params = [name, version]
-    result = "${join("/", compact([REGISTRY, name]))}:${version}"
+    result = "${join("/", compact([TAG_PREFIX, name]))}:${version}"
 }
 
 target "_common" {
