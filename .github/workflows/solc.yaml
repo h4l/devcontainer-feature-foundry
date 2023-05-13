@@ -41,6 +41,11 @@ jobs:
           provenance: true
           sbom: true
           push: true
+          # TODO: it may be best to disable caching from the POV of keeping the
+          #       build as transparent as possible.
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
       - name: Sign container images with Sigstore Cosign
         env:
           BAKE_META: ${{ steps.bake.outputs.metadata }}
