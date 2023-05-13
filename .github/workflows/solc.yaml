@@ -45,8 +45,11 @@ jobs:
       - name: Sign container images with Sigstore Cosign
         run: |
           set -xeuo pipefail
-          echo "${{ steps.bake.outputs.metadata }}" > bake-meta.json
-          jq < bake-meta.json -er '
+          echo "${{ steps.bake.outputs.metadata }}" > bake-meta1.json
+          echo "${{ toJSON(steps.bake.outputs.metadata) }}" > bake-meta2.json
+          head bake-meta1.json
+          head bake-meta2.json
+          jq < bake-meta2.json -er '
             .[]
             | select(.["image.name"]? and .["containerimage.digest"]?)
             | "\(.["image.name"])@\(.["containerimage.digest"])"
