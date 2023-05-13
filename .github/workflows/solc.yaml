@@ -10,12 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+      # Required for Cosign to create ephemeral credentials from the runner's
+      # GitHub OIDC Token.
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Install Cosign
+        uses: "sigstore/cosign-installer@v3.0.3"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Build and push
+        id: bake
         uses: docker/bake-action@v3
         env:
           REGISTRY: ghcr.io/${{ github.repository }}
@@ -24,5 +30,15 @@ jobs:
           workdir: src/solc
           files: docker-bake.hcl
           provenance: true
+          targets: cosign
           sbom: true
           push: true
+      - name: Sign container images with Sigstore Cosign
+        run: |
+          set -x
+          echo "${{ steps.bake.outputs.metadata }}" | jq -r '
+            .[]
+            | select(.["image.name"]? and .["containerimage.digest"]?)
+            | "\(.["image.name"])@\(.["containerimage.digest"])"
+          ' \
+          | xargs -I{} cosign sign --recursive {}
