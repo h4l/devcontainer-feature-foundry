@@ -43,23 +43,15 @@ jobs:
           sbom: true
           push: true
       - name: Sign container images with Sigstore Cosign
+        env:
+          BAKE_META: ${{ steps.bake.outputs.metadata }}
         run: |
           set -xeuo pipefail
-          echo "${{ steps.bake.outputs.metadata }}" > bake-meta1.json
+          jq <<<$BAKE_META
           sleep 1
-          echo ${{ steps.bake.outputs.metadata }} > bake-meta2.json
-          sleep 1
-          echo "${{ toJSON(steps.bake.outputs.metadata) }}" > bake-meta3.json
-          sleep 1
-          head bake-meta1.json
-          sleep 1
-          head bake-meta2.json
-          sleep 1
-          head bake-meta3.json
-          sleep 1
-          jq < bake-meta2.json -er '
+          jq <<<$BAKE_META -er '
             .[]
             | select(.["image.name"]? and .["containerimage.digest"]?)
             | "\(.["image.name"])@\(.["containerimage.digest"])"
-          '
-          # | xargs -I{} cosign sign --recursive {}
+          ' \
+          | xargs -I{} cosign sign --recursive {}
