@@ -47,11 +47,9 @@ jobs:
           BAKE_META: ${{ steps.bake.outputs.metadata }}
         run: |
           set -xeuo pipefail
-          jq <<<$BAKE_META
-          sleep 1
           jq <<<$BAKE_META -er '
             .[]
             | select(.["image.name"]? and .["containerimage.digest"]?)
             | "\(.["image.name"])@\(.["containerimage.digest"])"
           ' \
-          | xargs -I{} cosign sign --recursive {}
+          | xargs -I{} cosign sign --yes --recursive {}
