@@ -23,4 +23,6 @@ jobs:
         with:
           workdir: src/solc
           files: docker-bake.hcl
+          provenance: true
+          sbom: true
           push: true
