@@ -44,10 +44,11 @@ jobs:
           push: true
       - name: Sign container images with Sigstore Cosign
         run: |
-          set -x
-          echo "${{ steps.bake.outputs.metadata }}" | jq -r '
+          set -xeuo pipefail
+          echo "${{ steps.bake.outputs.metadata }}" > bake-meta.json
+          jq < bake-meta.json -er '
             .[]
             | select(.["image.name"]? and .["containerimage.digest"]?)
             | "\(.["image.name"])@\(.["containerimage.digest"])"
-          ' \
+          ' | tee \
           | xargs -I{} cosign sign --recursive {}
