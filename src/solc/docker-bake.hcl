@@ -32,7 +32,6 @@ target "_common" {
         z3-src = "https://github.com/Z3Prover/z3.git#z3-${Z3_VERSION}"
         solc-src = "https://github.com/ethereum/solidity.git#v${SOLC_VERSION}"
     }
-    attest = ["type=sbom", "type=provenance"]
 }
 
 target "solc-distroless" {
