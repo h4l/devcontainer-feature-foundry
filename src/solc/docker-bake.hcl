@@ -27,6 +27,8 @@ target "_common" {
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         BUILDKIT_CONTEXT_KEEP_GIT_DIR = 1
+        SOLC_VERSION = SOLC_VERSION
+        Z3_VERSION = Z3_VERSION
     }
     contexts = {
         z3-src = "https://github.com/Z3Prover/z3.git#z3-${Z3_VERSION}"

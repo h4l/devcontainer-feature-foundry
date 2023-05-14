@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1
 ARG DEBIAN_VERSION_NAME=bullseye
+ARG SOLC_VERSION
+ARG Z3_VERSION
 
 # To keep builds as quick as possible we always compile on the native platform.
 # To build for non-native CPU architectures we explicitly cross-compile, rather
@@ -68,9 +70,14 @@ RUN "$(cat /run/target_toolchain_prefix)-linux-gnu-strip" ./z3/lib/libz3.so
 
 FROM z3-build AS z3-build-libs
 RUN LIB_DIR=/build/z3-libs-debian/usr/lib/$(cat /run/target_toolchain_prefix)-linux-gnu \
-    && mkdir -p "${LIB_DIR:?}" \
+    && mkdir -p "${LIB_DIR:?}" /build/z3-versioned-lib-only \
     && cp -a /build/z3/lib/libz3.so* "${LIB_DIR:?}" \
-    && ln -s "${LIB_DIR:?}" /build/z3-libs-only
+    # Just the major.minor lib file. This is the file that solc actually
+    # references. It simplifies things to only ship this file rather than one
+    # file and a few symlink aliases of it.
+    && find /build/z3/lib/ \
+        -regextype egrep -regex '.*\/libz3\.so\.[0-9]+.[0-9]+$' \
+        -exec cp {} /build/z3-versioned-lib-only \;
 
 
 # We need to install the build dependencies of solc for the target platform, not
@@ -120,9 +127,28 @@ RUN --mount=from=solc-src,source=/,target=/build/solc-src,readwrite \
 RUN "$(cat /run/target_toolchain_prefix)-linux-gnu-strip" ./solc-build/solc/solc
 
 
+FROM alpine AS binaries-metadata
+ARG SOLC_VERSION
+ARG Z3_VERSION
+ARG TARGETARCH
+RUN apk add jq
+RUN jq --null-input \
+       --arg architecture "${TARGETARCH:?}" \
+       --arg solc_version "${SOLC_VERSION:?}" \
+       --arg z3_version "${Z3_VERSION:?}" \
+'{ \
+    "$manifest": { \
+        "org.opencontainers.image.description": "Solidity Compiler & Z3 library ORAS artifacts", \
+        "com.github.h4l.devcontainer-features.solc.architecture": $architecture, \
+        "com.github.h4l.devcontainer-features.solc.version.solc": $solc_version, \
+        "com.github.h4l.devcontainer-features.solc.version.z3": $z3_version, \
+    } \
+}' > .oras-annotations.json
+
 FROM scratch AS binaries
 COPY --from=solc-build /build/solc-build/solc/solc /
-COPY --from=z3-build-libs /build/z3-libs-only/ /
+COPY --from=z3-build-libs /build/z3-versioned-lib-only/ /
+COPY --from=binaries-metadata .oras-annotations.json /
 
 
 FROM gcr.io/distroless/base-nossl-debian11 AS solc-distroless
