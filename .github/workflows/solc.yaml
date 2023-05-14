@@ -6,6 +6,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  TAG_PREFIX: ghcr.io/${{ github.repository }}
+  TAG_VERSION: workinprogress-0.8.20
 
 jobs:
   build:
@@ -16,6 +18,7 @@ jobs:
       # Required for Cosign to create ephemeral credentials from the runner's
       # GitHub OIDC Token.
       id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,9 +35,6 @@ jobs:
       - name: Build and push
         id: bake
         uses: docker/bake-action@v3
-        env:
-          TAG_PREFIX: ${{ env.REGISTRY }}/${{ github.repository }}
-          TAG_VERSION: workinprogress-0.8.20
         with:
           workdir: src/solc
           files: docker-bake.hcl
@@ -62,3 +62,12 @@ jobs:
           for image_digest in "${image_digests[@]}"; do
             cosign sign --yes --recursive "${image_digest:?}"
           done
+      - name: Push & sign solc & z3 binaries as oras non-image artifacts
+        run: |
+          cd src/solc
+          ./push-and-sign-artifact.sh \
+            ./binaries/linux_amd64 \
+            "${{ env.TAG_PREFIX }}/artifacts/solc-z3-amd64:${{ env.TAG_VERSION }}"
+          ./push-and-sign-artifact.sh \
+            ./binaries/linux_arm64 \
+            "${{ env.TAG_PREFIX }}/artifacts/solc-z3-arm64:${{ env.TAG_VERSION }}"
