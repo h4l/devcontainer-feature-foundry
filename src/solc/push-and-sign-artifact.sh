@@ -36,4 +36,4 @@ pushed_digest=$(jq <<<"$oras_out" -eRr \
 # Sign the tag digest with cosign so that people can validate that it was
 # created in the CI job this is running in.
 # We don't need --recursive as we're pushing single image manifests, not lists.
-cosign --yes "${repo_tag:?}@${pushed_digest:?}"
+cosign sign --yes "${repo_tag:?}@${pushed_digest:?}"
