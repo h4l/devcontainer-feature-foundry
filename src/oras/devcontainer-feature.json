@@ -1,0 +1,15 @@
+{
+  "name": "ORAS",
+  "id": "oras",
+  "version": "1.0.0",
+  "description": "Install ORAS ( https://oras.land ), an OCI Artifact tool",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": ["1.0.0"],
+      "default": "1.0.0",
+      "description": "The specific version to install"
+    }
+  },
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
+}
