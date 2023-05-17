@@ -1,0 +1,26 @@
+{
+  "name": "Sigstore cosign",
+  "id": "cosign",
+  "version": "1.0.0",
+  "description": "Install Sigstore cosign ( https://www.sigstore.dev/ ), a signature verification & creation tool.",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": ["v2.0.2"],
+      "default": "",
+      "description": "cosign release version to be installed"
+    },
+    "installDir": {
+      "type": "string",
+      "proposals": ["/usr/local/bin"],
+      "default": "/usr/local/bin",
+      "description": "Where to install the cosign binary"
+    },
+    "useSudo": {
+      "type": "boolean",
+      "default": false,
+      "description": "set to true if installDir location requires sudo to write"
+    }
+  },
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
+}
